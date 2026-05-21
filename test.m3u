@@ -8,7 +8,7 @@ http://kocak.abahdi.workers.dev?id=204
 #EXTINF:-1 tvg-id="Indosiar" group-title="EMTEK",Indosiar HD
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
 #EXTHTTP:{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64)","Referer":"https://www.vidio.com/"}
-http://kocak.abahdi.workers.dev?id=205
+https://etslive-v3-vidio-com-tokenized.akamaized.net/stream/205/file/master.m3u8
 
 #EXTINF:-1 tvg-id="Moji" group-title="EMTEK",Moji TV HD
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
