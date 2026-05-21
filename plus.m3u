@@ -18,3 +18,22 @@ https://kocak.abahdi.workers.dev?id=rcti
 #EXTVLCOPT:http-referrer=https://rctiplus.com
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
 https://kocak.abahdi.workers.dev?id=mnctv
+
+#EXTINF:-1 tvg-id="GTV.IPTV" tvg-name="GTV" tvg-logo="https://emonaja.com" group-title="INDONESIA", GTV plus
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36
+#EXTVLCOPT:http-referrer=https://rctiplus.com
+#KODIPROP:inputstreamaddon=inputstream.adaptive.max_video_height=720
+#KODIPROP:inputstream.adaptive.stream_headers=Connection=keep-alive
+https://gtv-linier.rctiplus.id/hdntl=exp=1779423490~acl=%2F*~data=hdntl~hmac=bbea22119eebfbe98af8e4d5825e64dfda6c4cff53a2dd6f1d2ef3e6561a4ced/gtv-sdi-avc1_450000=4-mp4a_96000=1.m3u8
+
+#EXTINF:-1 tvg-id="RCTI.IPTV" tvg-name="RCTI" tvg-logo="https://object-streamo.emonaja.com/img/rcti.png" group-title="INDONESIA", RCTI plus
+#KODIPROP:inputstream.adaptive.max_video_height=720
+#EXTVLCOPT:http-referrer=https://embed.rctiplus.com/
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+https://rcti-linier.rctiplus.id/rcti-sdi.m3u8?hdnts=exp=1779403396~hmac=be7eb40286adc8459a779ff65c851e7a33b0c4ff424f6eab09ef95504c597f5a
+
+#EXTINF:-1 tvg-id="MNCTV" tvg-name="MNCTV" tvg-logo="https://emonaja.com" group-title="INDONESIA",MNCTV plus
+#KODIPROP:inputstream.adaptive.max_video_height=720
+#EXTVLCOPT:http-referrer=https://rctiplus.com
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
+https://mnctv-linier.rctiplus.id/hdntl=exp=1779423359~acl=%2F*~data=hdntl~hmac=d2b6d47527cc97903c40a2864b1d551a0bbab586e8f78a0d33f69061d2a8edab/mnctv-sdi-avc1_450000=9-mp4a_96000=1.m3u8
