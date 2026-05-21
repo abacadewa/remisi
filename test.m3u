@@ -18,4 +18,4 @@ http://kocak.abahdi.workers.dev?id=206
 #EXTINF:-1 tvg-id="ANTV" group-title="LOKAL",ANTV HD
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
 #EXTHTTP:{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64)","Referer":"https://www.vidio.com/"}
-http://kocak.abahdi.workers.dev?id=782
+https://sarana.abahdi.workers.dev/?url=https://etslive-v3-vidio-com-tokenized.akamaized.net/stream/205/file/stream.mpd?hdntl=exp=1779371502~acl=%2fstream%2f205%2ffile%2fstream.mpd!%2fstream%2f205%2ffile%2f*%2faac%2f*!%2fstream%2f205%2ffile%2f*%2f*-2160p%2f*!%2fstream%2f205%2ffile%2f*%2f*-1440p%2f*!%2fstream%2f205%2ffile%2f*%2f*-1080p%2f*!%2fstream%2f205%2ffile%2f*%2f*-720p%2f*!%2fstream%2f205%2ffile%2f*%2f*-480p%2f*!%2fstream%2f205%2ffile%2f*%2f*-360p%2f*~id=219424877~data=hdntl~hmac=f00b7f2f835e3678970584b2804956cb828960e09f1ab8e655af976940069106
