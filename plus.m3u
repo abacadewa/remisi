@@ -7,9 +7,9 @@
 #KODIPROP:inputstream.adaptive.stream_headers=Connection=keep-alive
 https://kocak.abahdi.workers.dev?id=gtv
 
-#EXTINF:-1 tvg-id="RCTI.IPTV" tvg-name="RCTI" tvg-logo="https://emonaja.com" group-title="INDONESIA", RCTI plus
+#EXTINF:-1 tvg-id="RCTI.IPTV" tvg-name="RCTI" tvg-logo="https://object-streamo.emonaja.com/img/rcti.png" group-title="INDONESIA", RCTI plus
 #KODIPROP:inputstream.adaptive.max_video_height=720
-#EXTVLCOPT:http-referrer=https://rctiplus.com
+#EXTVLCOPT:http-referrer=https://embed.rctiplus.com/
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
 https://kocak.abahdi.workers.dev?id=rcti
 
