@@ -3,19 +3,19 @@
 #EXTINF:-1 tvg-id="SCTV" group-title="EMTEK",SCTV HD
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
 #EXTHTTP:{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64)","Referer":"https://abah.byethost17.com"}
-http://abah.byethost17.com/kocak.php?id=204
+http://kocak-iptv.abahdi.workers.dev?id=204
 
 #EXTINF:-1 tvg-id="Indosiar" group-title="EMTEK",Indosiar HD
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
 #EXTHTTP:{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64)","Referer":"https://abah.byethost17.com"}
-http://abah.byethost17.com/kocak.php?id=205
+http://kocak-iptv.abahdi.workers.dev?id=205
 
 #EXTINF:-1 tvg-id="Moji" group-title="EMTEK",Moji TV HD
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
 #EXTHTTP:{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64)","Referer":"https://abah.byethost17.com"}
-http://abah.byethost17.com/kocak.php?id=206
+http://kocak-iptv.abahdi.workers.dev?id=206
 
 #EXTINF:-1 tvg-id="ANTV" group-title="LOKAL",ANTV HD
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36
 #EXTHTTP:{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64)","Referer":"https://abah.byethost17.com"}
-http://abah.byethost17.com/kocak.php?id=782
+http://kocak-iptv.abahdi.workers.dev?id=782
