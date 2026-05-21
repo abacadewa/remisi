@@ -1,0 +1,1 @@
+dapur ngebul pikiran senang
