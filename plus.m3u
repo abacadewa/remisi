@@ -32,7 +32,7 @@ https://op-group1-swiftservehd-1.dens.tv/h/h77/S4/mnf.m3u8
 #EXTVLCOPT:http-user-agent=android-R+
 #EXTVLCOPT:http-referrer=https://www.rctiplus.com/
 https://juss.abahdi.workers.dev/?id=4
-https://rcti-linier.rctiplus.id/iNews-sdi.m3u8
+https://inews-linier.rctiplus.id/inews-sdi.m3u8?hdnts=exp=1779510250~hmac=389aa9dc66412de538958baf4c97adfe64a0d56a572660e2992c1e96e4faeac4
 
 #EXTINF:-1 tvg-id="RCTI - [Channel 1].id" tvg-url="https://www.bevy.be/bevyfiles/indonesia.xml" tvg-logo="https://i.ibb.co.com/8LSDx2WG/RCTI.png" group-title="NASIONAL",RCTI HD
 https://indihuy.streamized.net/atm/DASH/rcti/manifest.mpd
@@ -42,7 +42,7 @@ https://indihuy.streamized.net/atm/DASH/rcti/manifest.mpd
 #EXTVLCOPT:http-referrer=https://embed.rctiplus.com/
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
 https://juss.abahdi.workers.dev/?id=1
-https://rcti-linier.rctiplus.id/rcti-sdi.m3u8
+https://rcti-linier.rctiplus.id/rcti-sdi.m3u8?hdnts=exp=1779509098~hmac=3e86dd2d167cff183997fa9ebdb5653a6f6caea859d9f6be491bbe963fdb097c
 
 #EXTINF:-1 tvg-id="GTV.IPTV" tvg-name="GTV" tvg-logo="https://object-streamo.emonaja.com/img/gtv.png" group-title="INDONESIA", GTV plus
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36
@@ -50,7 +50,7 @@ https://rcti-linier.rctiplus.id/rcti-sdi.m3u8
 #KODIPROP:inputstreamaddon=inputstream.adaptive.max_video_height=720
 #KODIPROP:inputstream.adaptive.stream_headers=Connection=keep-alive
 https://juss.abahdi.workers.dev/?id=3
-https://rcti-linier.rctiplus.id/gtv-sdi.m3u8
+https://gtv-linier.rctiplus.id/gtv-sdi.m3u8?hdnts=exp=1779510395~hmac=8c53051070d40ec4202ae2f3ed31622ac5ab9bd9e6b2bac98f3d08e9b08d5595
 
 #EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/GTV_%282017%29.svg/1200px-GTV_%282017%29.svg.png" group-title="INDONESIA",GTV (R+)
 #EXTVLCOPT:http-user-agent=android-R+
@@ -62,7 +62,7 @@ https://r-plus.sedotcw3.workers.dev/index.m3u8?id=gtv
 #EXTVLCOPT:http-referrer=https://www.rctiplus.com/
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
 https://juss.abahdi.workers.dev/?id=2
-https://rcti-linier.rctiplus.id/mnctv-sdi.m3u8
+https://mnctv-linier.rctiplus.id/mnctv-sdi.m3u8?hdnts=exp=1779510309~hmac=cff6d2da1f33150862af1a6e682c4576df285c77e1bf6a290bc8b468ba128f07
 
 #EXTINF:-1 tvg-id="MNCTV.IPTV" tvg-name="MNCTV" tvg-logo="https://object-streamo.emonaja.com/img/mnctv.png" group-title="INDONESIA", MNCTV 
 #KODIPROP:inputstream.adaptive.max_video_height=720
