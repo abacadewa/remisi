@@ -32,6 +32,7 @@ https://op-group1-swiftservehd-1.dens.tv/h/h77/S4/mnf.m3u8
 #EXTVLCOPT:http-user-agent=android-R+
 #EXTVLCOPT:http-referrer=https://www.rctiplus.com/
 https://juss.abahdi.workers.dev/?id=4
+https://rcti-linier.rctiplus.id/iNews-sdi.m3u8
 
 #EXTINF:-1 tvg-id="RCTI - [Channel 1].id" tvg-url="https://www.bevy.be/bevyfiles/indonesia.xml" tvg-logo="https://i.ibb.co.com/8LSDx2WG/RCTI.png" group-title="NASIONAL",RCTI HD
 https://indihuy.streamized.net/atm/DASH/rcti/manifest.mpd
@@ -41,6 +42,7 @@ https://indihuy.streamized.net/atm/DASH/rcti/manifest.mpd
 #EXTVLCOPT:http-referrer=https://embed.rctiplus.com/
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
 https://juss.abahdi.workers.dev/?id=1
+https://rcti-linier.rctiplus.id/rcti-sdi.m3u8
 
 #EXTINF:-1 tvg-id="GTV.IPTV" tvg-name="GTV" tvg-logo="https://object-streamo.emonaja.com/img/gtv.png" group-title="INDONESIA", GTV plus
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36
@@ -48,6 +50,7 @@ https://juss.abahdi.workers.dev/?id=1
 #KODIPROP:inputstreamaddon=inputstream.adaptive.max_video_height=720
 #KODIPROP:inputstream.adaptive.stream_headers=Connection=keep-alive
 https://juss.abahdi.workers.dev/?id=3
+https://rcti-linier.rctiplus.id/gtv-sdi.m3u8
 
 #EXTINF:-1 tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/GTV_%282017%29.svg/1200px-GTV_%282017%29.svg.png" group-title="INDONESIA",GTV (R+)
 #EXTVLCOPT:http-user-agent=android-R+
@@ -59,6 +62,7 @@ https://r-plus.sedotcw3.workers.dev/index.m3u8?id=gtv
 #EXTVLCOPT:http-referrer=https://www.rctiplus.com/
 #EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
 https://juss.abahdi.workers.dev/?id=2
+https://rcti-linier.rctiplus.id/mnctv-sdi.m3u8
 
 #EXTINF:-1 tvg-id="MNCTV.IPTV" tvg-name="MNCTV" tvg-logo="https://object-streamo.emonaja.com/img/mnctv.png" group-title="INDONESIA", MNCTV 
 #KODIPROP:inputstream.adaptive.max_video_height=720
