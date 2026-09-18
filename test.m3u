@@ -63,6 +63,11 @@ https://r-plus.sedotcw3.workers.dev/index.m3u8?id=gtv
 #EXTVLCOPT:http-referrer=https://www.rctiplus.com/
 https://r-plus.sedotcw3.workers.dev/index.m3u8?id=inews
 
+#EXTINF:-1 tvg-id="jowo.id" tvg-name="Indosiar" tvg-logo="https://i.imgur.com/fksxiaS.png" group-title="INDONESIA", jowo
+#EXTVLCOPT:http-user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36&Referer=https://www.dens.tv/
+#KODIPROP:inputstream.adaptive.max_video_height=480
+https://op-flashcon-digdayasd-1.dens.tv/h/h215/S1/mnf.m3u8
+
 #EXTINF:-1 tvg-id="TransTV.id" tvg-logo="https://thumbor.prod.vidiocdn.com/__j35q7LPpcS2EgkR7v8GpE4USQ=/230x230/filters:quality(70)/vidio-web-prod-livestreaming/uploads/livestreaming/square_image/733/ecaa60.png" group-title="Indonesia Channels",TransTV HD
 http://119.82.250.109:8080/nl.m3u8?id=1145
 
