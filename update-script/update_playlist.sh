@@ -7,8 +7,8 @@
 set -e
 
 TOKEN=""
-REPO="dhasap/dhanytv"
-TARGET_FILE="dhanytv.m3u"
+REPO="abacadewa/remisi"
+TARGET_FILE="test.m3u"
 EPG_OUTPUT="epg.xml"
 
 # Colors
