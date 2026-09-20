@@ -1,41 +1,297 @@
-name: Update IPTV Playlist
+name: Auto Update IPTV Playlist
 
 on:
-  # Penjelasan ekspresi Cron: menit jam hari bulan minggu. Contoh ini berarti setiap hari pukul 08:00 UTC (16:00 waktu Beijing) dijalankan otomatis
   schedule:
-    - cron: '0 8 * * *'
-  # Memungkinkan Anda juga memicu manual dari halaman Actions repositori
+    # Daily at 00:00 UTC (07:00 WIB). Each run re-downloads fresh EPG sources, so
+    # running daily keeps the programme guide from going stale between rebuilds.
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  update-playlist:
     runs-on: ubuntu-latest
 
-    # Memberikan izin kepada Actions untuk menulis konten, jika tidak akan gagal saat push
-    permissions:
-      contents: write
-
     steps:
-      # 1. Mengambil kode repositori, memastikan mendapatkan versi terbaru
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
-
-      # 2. Menyiapkan lingkungan Python (jika skrip Anda menggunakan Python)
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          fetch-depth: 0
 
-      # 3. Menjalankan skrip untuk menghasilkan/memperbarui file playlist
-      # Ganti dengan nama file skrip Anda sendiri, atau Anda dapat langsung menulis perintah curl untuk mengunduh file
-      - name: Run Update Script
-        run: python update_playlist.py
-
-      # 4. Mengonfigurasi identitas Git, melakukan commit dan push
-      - name: Commit and Push changes
+      - name: Syntax-check update scripts
         run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "Auto-update playlist at $(date +'%Y-%m-%d %H:%M')" || echo "No changes to commit"
+          # Fail fast on broken Python before touching the playlist — prevents
+          # SyntaxError/NameError mid-pipeline (happened 2026-08-28).
+          python3 -m py_compile update-script/*.py
+          echo "All update scripts compile OK"
+
+      - name: Download Latest Source
+        env:
+          SRC: ${{ secrets.PLAYLIST_SOURCE }}
+          SRC2: ${{ secrets.PLAYLIST_SOURCE_2 }}
+        run: |
+          if [ -z "$SRC" ]; then
+            echo "ERROR: Secret PLAYLIST_SOURCE belum diset!"
+            exit 1
+          fi
+          echo "Mengunduh data terbaru..."
+          curl -sL "$SRC" -o source_latest.m3u
+          # Secondary source (URL kept only in the PLAYLIST_SOURCE_2 secret).
+          # Appended to the combined source so merge_source.py ingests both.
+          if [ -n "$SRC2" ]; then
+            echo "Mengunduh sumber sekunder..."
+            printf '\n' >> source_latest.m3u
+            if curl -sL "$SRC2" >> source_latest.m3u; then
+              echo "Sumber sekunder ditambahkan."
+            else
+              echo "WARNING: sumber sekunder gagal diunduh (dilewati)."
+            fi
+          fi
+          echo "Download selesai. Ukuran file: $(wc -c < source_latest.m3u) bytes"
+          # Validate: file must be non-empty and start with #EXTM3U (not HTML error page)
+          if [ ! -s source_latest.m3u ]; then
+            echo "ERROR: File sumber kosong!"
+            exit 1
+          fi
+          if ! head -1 source_latest.m3u | grep -q '#EXTM3U'; then
+            echo "ERROR: File sumber bukan playlist M3U yang valid (tidak diawali #EXTM3U)."
+            echo "  Header pertama: $(head -1 source_latest.m3u | head -c 120)"
+            exit 1
+          fi
+          echo "Validasi sumber: OK"
+
+      - name: Merge & Fix Playlist
+        env:
+          SANITIZE_PATTERNS: ${{ secrets.SANITIZE_PATTERNS }}
+        run: |
+          TARGET_FILE="test.m3u"
+          SOURCE_FILE="source_latest.m3u"
+
+          if [ ! -f "$TARGET_FILE" ]; then
+            echo "ERROR: File $TARGET_FILE tidak ditemukan!"
+            exit 1
+          fi
+          if [ ! -f "$SOURCE_FILE" ]; then
+            echo "ERROR: File sumber gagal diunduh!"
+            exit 1
+          fi
+
+          OLD_COUNT=$(grep -c '#EXTINF' "$TARGET_FILE" || echo "0")
+          echo "Channel sebelum: $OLD_COUNT"
+
+          SANITIZE_ARG=()
+          if [ -n "$SANITIZE_PATTERNS" ]; then
+            SANITIZE_ARG=(--sanitize "$SANITIZE_PATTERNS")
+          fi
+
+          python3 update-script/merge_source.py "$SOURCE_FILE" --target "$TARGET_FILE" "${SANITIZE_ARG[@]}"
+
+          rm -f "$SOURCE_FILE"
+          AFTER=$(grep -c '#EXTINF' "$TARGET_FILE" || echo "0")
+          echo "Channel setelah merge: $AFTER"
+
+      - name: Early Cleanup (remove dead-channel dupes before extra injection)
+        run: |
+          echo "=== Early cleanup: removing dead-channel duplicates ==="
+          python3 update-script/cleanup_playlist.py test.m3u --write || true
+
+      - name: Inject Curated Extra Channels (World Cup, events)
+        run: |
+          echo "=== Injecting curated extra channels (update-script/extra_channels.m3u) ==="
+          BEFORE=$(grep -c '#EXTINF' test.m3u || true); BEFORE=${BEFORE:-0}
+          python3 update-script/merge_extra.py --ci
+          AFTER=$(grep -c '#EXTINF' test.m3u || true); AFTER=${AFTER:-0}
+          echo "Extra channels: $((AFTER - BEFORE)) injected (total: $AFTER)"
+
+      - name: Merge International Channels (iptv-org)
+        run: |
+          echo "=== Merging international channels from iptv-org ==="
+          BEFORE=$(grep -c '#EXTINF' test.m3u || echo "0")
+          python3 update-script/merge_international.py --ci
+          AFTER=$(grep -c '#EXTINF' test.m3u || echo "0")
+          ADDED=$((AFTER - BEFORE))
+          echo "International channels: $ADDED added (total: $AFTER)"
+
+      - name: Fix ClearKey license keys
+        env:
+          FIX_CLEARKEY_URLS: "${{ secrets.PLAYLIST_SOURCE_2 }}"
+        run: |
+          echo "=== Fixing ClearKey keys ==="
+          python3 update-script/fix_clearkeys.py test.m3u
+
+      - name: Clean Playlist & Generate OTT Variant
+        env:
+          SANITIZE_PATTERNS: ${{ secrets.SANITIZE_PATTERNS }}
+        run: |
+          echo "=== Clean Playlist & Generate OTT Variant ==="
+          SANITIZE_ARG=()
+          if [ -n "$SANITIZE_PATTERNS" ]; then
+            SANITIZE_ARG=(--sanitize "$SANITIZE_PATTERNS")
+          fi
+          python3 update-script/cleanup_playlist.py test.m3u --write --ott-output test-ott.m3u --check "${SANITIZE_ARG[@]}"
+          # Re-fix ClearKeys after final cleanup
+          FIX_CLEARKEY_URLS="${{ secrets.PLAYLIST_SOURCE_2 }}" python3 update-script/fix_clearkeys.py test.m3u
+          echo "Playlist channels : $(grep -c '#EXTINF' test.m3u || echo '0')"
+          echo "OTT channels      : $(grep -c '#EXTINF' test-ott.m3u || echo '0')"
+          # Validate OTT: must not contain active .mpd (DASH) URLs
+          DASH_IN_OTT=$(grep -v '^#' test-ott.m3u | grep -c '\.mpd' || true)
+          if [ "$DASH_IN_OTT" -gt 0 ]; then
+            echo "ERROR: OTT playlist mengandung $DASH_IN_OTT channel DASH (.mpd)!"
+            echo "  cleanup_playlist.py seharusnya membuang semua DASH dari OTT."
+            exit 1
+          fi
+          echo "OTT validation: OK (0 DASH channels)"
+
+      - name: Re-fix ClearKeys after cleanup
+        run: |
+          echo "=== Re-fixing ClearKeys after cleanup ==="
+          BEFORE=$(grep -c 'license_key=' test.m3u || echo 0)
+          python3 update-script/fix_clearkeys.py test.m3u
+          AFTER=$(grep -c 'license_key=' test.m3u || echo 0)
+          echo "ClearKey entries: $BEFORE -> $AFTER"
+
+      - name: Verify critical ClearKey keys
+        run: |
+          echo "=== Verifying critical ClearKey keys ==="
+          python3 update-script/verify_keys.py test.m3u
+          echo "Key verification complete"
+
+      - name: Validate ClearKey entries (drop revoked keys)
+        continue-on-error: true
+        timeout-minutes: 15
+        run: |
+          python3 update-script/validate_clearkeys.py test.m3u --write || echo "WARN: clearkey validation skipped"
+
+      - name: Download EPG Sources (Multi-Source)
+        run: |
+          echo "=== Downloading EPG sources ==="
+          FAIL_COUNT=0
+
+          # AqFad2811/epg (primary)
+          # NOTE: epg.xml renamed to aqfad_epg.xml to avoid collision with output
+          AQFAD_BASE="https://raw.githubusercontent.com/AqFad2811/epg/refs/heads/main"
+          for f in indonesia.xml astro.xml singapore.xml rtmklik.xml unifitv.xml sooka.xml; do
+            echo "  AqFad: $f"
+            curl -sL "${AQFAD_BASE}/${f}" -o "${f}" || { echo "  WARNING: $f gagal"; FAIL_COUNT=$((FAIL_COUNT+1)); }
+          done
+          echo "  AqFad: epg.xml -> aqfad_epg.xml"
+          curl -sL "${AQFAD_BASE}/epg.xml" -o "aqfad_epg.xml" || { echo "  WARNING: aqfad_epg.xml gagal"; FAIL_COUNT=$((FAIL_COUNT+1)); }
+
+          # epgshare01.online (gzipped, daily updated)
+          EPGSHARE_BASE="https://epgshare01.online/epgshare01"
+          for f in ID1 SG1 MY1 CA2 IT1 FR1 AE1 IN1 ALJAZEERA1 PL1 CZ1; do
+            echo "  epgshare01: $f"
+            curl -sL "${EPGSHARE_BASE}/epg_ripper_${f}.xml.gz" -o "epgshare01_${f}.xml.gz"
+            if gunzip -f "epgshare01_${f}.xml.gz" 2>/dev/null; then
+              echo "    OK: $(wc -c < epgshare01_${f}.xml) bytes"
+            else
+              echo "  WARNING: $f gunzip gagal"
+              rm -f "epgshare01_${f}.xml.gz"
+              FAIL_COUNT=$((FAIL_COUNT+1))
+            fi
+          done
+
+          # open-epg.com
+          echo "  open-epg: indonesia.xml"
+          curl -sL "https://www.open-epg.com/files/indonesia.xml" -o "open_epg_indonesia.xml" || { echo "  WARNING: open-epg gagal"; FAIL_COUNT=$((FAIL_COUNT+1)); }
+
+          echo "EPG sources downloaded. Failures: $FAIL_COUNT"
+          if [ "$FAIL_COUNT" -ge 10 ]; then
+            echo "ERROR: Too many EPG source failures ($FAIL_COUNT), aborting."
+            exit 1
+          fi
+
+      - name: Generate Custom EPG
+        run: |
+          echo "=== Generate Custom EPG ==="
+          python3 update-script/generate_epg.py \
+            --m3u test.m3u \
+            --output epg.xml \
+            --sources \
+              epgshare01_ID1.xml epgshare01_SG1.xml epgshare01_MY1.xml \
+              epgshare01_CA2.xml epgshare01_IT1.xml epgshare01_FR1.xml \
+              epgshare01_AE1.xml epgshare01_IN1.xml epgshare01_ALJAZEERA1.xml \
+              epgshare01_PL1.xml epgshare01_CZ1.xml \
+              open_epg_indonesia.xml \
+              indonesia.xml astro.xml singapore.xml rtmklik.xml unifitv.xml \
+              aqfad_epg.xml sooka.xml
+
+          # Cleanup source files ONLY (not output epg.xml!)
+          rm -f indonesia.xml astro.xml singapore.xml rtmklik.xml unifitv.xml sooka.xml
+          rm -f aqfad_epg.xml epgshare01_*.xml open_epg_indonesia.xml
+
+          if [ -f "epg.xml" ] && [ -s "epg.xml" ]; then
+            echo "Custom EPG generated: $(du -h epg.xml | cut -f1)"
+            echo "EPG channels: $(grep -c '<channel ' epg.xml)"
+            echo "EPG programmes: $(grep -c '<programme ' epg.xml)"
+          else
+            echo "ERROR: Custom EPG gagal di-generate!"
+            exit 1
+          fi
+
+      - name: Safety Gate (cegah penghapusan channel/EPG tidak sengaja)
+        run: |
+          echo "=== Safety gate: memverifikasi tidak ada yang terhapus tidak sengaja ==="
+          OLD_CH=$(git show HEAD:test.m3u 2>/dev/null | grep -c '#EXTINF' || true); OLD_CH=${OLD_CH:-0}
+          NEW_CH=$(grep -c '#EXTINF' test.m3u || true); NEW_CH=${NEW_CH:-0}
+          OLD_PROG=$(git show HEAD:epg.xml 2>/dev/null | grep -c '<programme ' || true); OLD_PROG=${OLD_PROG:-0}
+          NEW_PROG=$(grep -c '<programme ' epg.xml || true); NEW_PROG=${NEW_PROG:-0}
+          WC=$(grep -c 'group-title="WorldCup 2026"' test.m3u || true); WC=${WC:-0}
+          echo "Channels: $OLD_CH -> $NEW_CH | EPG programmes: $OLD_PROG -> $NEW_PROG | WorldCup: $WC"
+          # Minimum absolute threshold: playlist must have at least 250 channels
+          if [ "$NEW_CH" -lt 250 ]; then
+            echo "ERROR: Channel terlalu sedikit ($NEW_CH < 250). Kemungkinan source gagal."
+            exit 1
+          fi
+          if [ "$WC" -lt 1 ]; then
+            echo "WARNING: Channel WorldCup 2026 hilang! Melanjutkan tanpa commit..."
+            echo "  (Safety gate: WorldCup 2026 sudah berakhir, check ini hanya peringatan)"
+          fi
+          if [ "$OLD_CH" -gt 0 ] && [ "$NEW_CH" -lt $((OLD_CH * 70 / 100)) ]; then
+            echo "WARNING: Channel turun >30% ($OLD_CH -> $NEW_CH). Continuing..."
+          fi
+          if [ "$OLD_PROG" -gt 0 ] && [ "$NEW_PROG" -lt $((OLD_PROG * 50 / 100)) ]; then
+            echo "WARNING: EPG programme turun >50% ($OLD_PROG -> $NEW_PROG). Continuing..."
+          fi
+          echo "Safety gate passed."
+
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          CHANGED_FILES=$(git status --porcelain -- test.m3u test-ott.m3u epg.xml update-script/)
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "$CHANGED_FILES"
+            git diff --stat test.m3u test-ott.m3u epg.xml update-script/ || true
+          fi
+
+      - name: Commit and Push Changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add test.m3u test-ott.m3u epg.xml update-script/
+          COMMIT_DATE=$(date -u '+%Y-%m-%d %H:%M UTC')
+          CHANNEL_COUNT=$(grep -c '#EXTINF' test.m3u || echo "0")
+          OTT_CHANNEL_COUNT=$(grep -c '#EXTINF' test-ott.m3u 2>/dev/null || echo "0")
+          EPG_CHANNELS=$(grep -c '<channel ' epg.xml 2>/dev/null || echo "0")
+          git commit -m "auto-update: Playlist + OTT + EPG ($CHANNEL_COUNT ch, $OTT_CHANNEL_COUNT OTT, $EPG_CHANNELS EPG) - $COMMIT_DATE"
           git push
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "============================================"
+          echo "  Auto-Update IPTV Playlist + EPG"
+          echo "============================================"
+          echo "Tanggal   : $(date -u '+%Y-%m-%d %H:%M UTC')"
+          echo "Channel   : $(grep -c '#EXTINF' test.m3u 2>/dev/null || echo 'N/A')"
+          echo "OTT Ch    : $(grep -c '#EXTINF' test-ott.m3u 2>/dev/null || echo 'N/A')"
+          echo "EPG Ch    : $(grep -c '<channel ' epg.xml 2>/dev/null || echo 'N/A')"
+          echo "EPG Size  : $(du -h epg.xml 2>/dev/null | cut -f1 || echo 'N/A')"
+          echo "Perubahan : ${{ steps.check_changes.outputs.has_changes }}"
+          echo "============================================"
